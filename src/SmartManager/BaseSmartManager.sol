@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/utils/math/Math.sol";
+import "@openzeppelin/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/access/Ownable.sol";
 import "./interfaces/ISmartManager.sol";
 
 // SmartManager contract, used for manage smartNFT contract
 contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
-    using Counters for Counters.Counter;
     using ECDSA for bytes32;
+    using Math for uint256;
 
     struct SmartNFTInfo {
         address implAddr; // The implementation address of the SmartNFT
@@ -20,7 +20,7 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
         uint64 auditTime;
     }
 
-    Counters.Counter public tokenIdCounter;
+    uint256 public tokenIdCounter;
 
     mapping(address => bool) private _validators;
 
@@ -33,7 +33,7 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
         _;
     }
 
-    constructor(string memory url_) ERC1155(url_) {
+    constructor(string memory url_) Ownable(msg.sender) ERC1155(url_) {
         _setValidator(_msgSender(), true);
     }
 
@@ -54,8 +54,8 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
         bytes calldata initCode,
         uint256 totalSupply
     ) internal returns (uint256 tokenId, address implAddr) {
-        tokenIdCounter.increment();
-        tokenId = tokenIdCounter.current();
+        tokenIdCounter.tryAdd(1);
+        tokenId = tokenIdCounter;
 
         implAddr = _deploy(initCode, tokenId);
         _mint(_msgSender(), tokenId, totalSupply, "");
