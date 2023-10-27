@@ -2,6 +2,8 @@
 pragma solidity ^0.8.20;
 
 interface ISmartNFT {
+    error PermissionDenied();
+
     /**
      * @dev Proxy call `execute` function by delegateCall
      *

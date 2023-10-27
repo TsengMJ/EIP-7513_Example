@@ -15,9 +15,9 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
 
     struct SmartNFTInfo {
         address implAddr; // The implementation address of the SmartNFT
-        VerificationStatus status; // The verification status of the SmartNFT
         uint64 registerTime;
         uint64 auditTime;
+        VerificationStatus status; // The verification status of the SmartNFT
     }
 
     uint256 public tokenIdCounter;
@@ -38,12 +38,12 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
     }
 
     function register(
-        bytes calldata initCode,
+        bytes calldata creationCode,
         uint256 totalSupply
     ) external returns (uint256 tokenId, address implAddr) {
         _beforeRegister();
 
-        (tokenId, implAddr) = _register(initCode, totalSupply);
+        (tokenId, implAddr) = _register(creationCode, totalSupply);
 
         _afterRegister();
 
@@ -51,13 +51,13 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
     }
 
     function _register(
-        bytes calldata initCode,
+        bytes calldata creationCode,
         uint256 totalSupply
     ) internal returns (uint256 tokenId, address implAddr) {
-        tokenIdCounter.tryAdd(1);
+        tokenIdCounter += 1;
         tokenId = tokenIdCounter;
 
-        implAddr = _deploy(initCode, tokenId);
+        implAddr = _deploy(creationCode, tokenId);
         _mint(_msgSender(), tokenId, totalSupply, "");
 
         _smartNFTInfos[tokenId] = SmartNFTInfo({
@@ -71,9 +71,14 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
     }
 
     function _deploy(
-        bytes memory initCode,
+        bytes memory creationCode,
         uint256 tokenId
     ) internal returns (address) {
+        bytes memory initCode = abi.encodePacked(
+            creationCode,
+            abi.encode(address(this), tokenId)
+        );
+
         address addr;
         assembly {
             addr := create2(0, add(initCode, 0x20), mload(initCode), tokenId)
@@ -112,9 +117,10 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
     }
 
     function setValidators(
-        address[] memory validators,
+        address[] calldata validators,
         bool isValid
     ) public onlyOwner {
+        require(validators.length > 0, "INVALID VALIDATORS");
         for (uint256 i = 0; i < validators.length; i++) {
             _setValidator(validators[i], isValid);
         }
@@ -130,13 +136,17 @@ contract BaseSmartManager is ISmartManager, Ownable, ERC1155 {
         return _smartNFTInfos[tokenId].status;
     }
 
-    function getSmartNFTInfo(
+    function isValidator(address validator) external view returns (bool) {
+        return _validators[validator];
+    }
+
+    function smartNFTInfoOf(
         uint256 tokenId
     ) external view returns (SmartNFTInfo memory) {
         return _smartNFTInfos[tokenId];
     }
 
-    function getSmartNFTTokenId(
+    function smartNFTTokenIdOf(
         address smartNFT
     ) external view returns (uint256) {
         return _smartNFTTokenIds[smartNFT];

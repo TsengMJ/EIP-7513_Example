@@ -32,11 +32,7 @@ contract SwapTokenWithUnitSwapSmartNFT is BaseSmartNFT {
         uint256 tokenId_
     ) BaseSmartNFT(manager_, tokenId_) {}
 
-    function execute(
-        bytes memory data
-    ) external payable override returns (bool) {
-        require(validatePermission(), "invalid permission");
-
+    function _execute(bytes memory data) internal override {
         ExecuteParam memory param;
 
         param = abi.decode(data, (ExecuteParam));
@@ -47,15 +43,12 @@ contract SwapTokenWithUnitSwapSmartNFT is BaseSmartNFT {
             param.amountIn
         );
         IERC20(param.path[0]).approve(ROUTER02_ADDR, param.amountIn);
-        uint256[] memory amounts = IUniswapV2Router02(ROUTER02_ADDR)
-            .swapExactTokensForTokens(
-                param.amountIn,
-                0,
-                param.path,
-                param.to,
-                param.deadline
-            );
-
-        return true;
+        IUniswapV2Router02(ROUTER02_ADDR).swapExactTokensForTokens(
+            param.amountIn,
+            0,
+            param.path,
+            param.to,
+            param.deadline
+        );
     }
 }

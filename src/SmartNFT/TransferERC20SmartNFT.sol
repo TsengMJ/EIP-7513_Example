@@ -17,16 +17,10 @@ contract TransferERC20SmartNFT is BaseSmartNFT {
         uint256 tokenId_
     ) BaseSmartNFT(manager_, tokenId_) {}
 
-    function execute(
-        bytes memory data
-    ) external payable override returns (bool) {
-        require(validatePermission(), "invalid permission");
-
+    function _execute(bytes memory data) internal override {
         ExecuteParam memory param;
         param = abi.decode(data, (ExecuteParam));
 
         IERC20(param.token).transfer(param.to, param.amount);
-
-        return true;
     }
 }

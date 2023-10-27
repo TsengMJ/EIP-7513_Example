@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "@smart-manager/interfaces/ISmartManager.sol";
 import "./interfaces/ISmartNFT.sol";
 
-abstract contract BaseSmartNFT is ISmartNFT {
+contract BaseSmartNFT is ISmartNFT {
     address public immutable SMART_MANAGER;
     address public immutable CURRENT_ADDRESS;
     uint256 public immutable TOKEN_ID;
@@ -29,30 +29,33 @@ abstract contract BaseSmartNFT is ISmartNFT {
 
     function execute(
         bytes memory data
-    ) external payable virtual override returns (bool) {
+    ) external payable override returns (bool) {
+        if (!validatePermission()) {
+            revert PermissionDenied();
+        }
+
+        _execute(data);
+
+        return true;
+    }
+
+    function _execute(bytes memory data) internal virtual {
         /**
          * TODO: Steps to implement the logic of the execute function
          *
-         * 1. Validate the permission
-         * 2. Decode the parameters
-         * 3. Implement your own logic
-         * 4. Return the result
-         * 5. (Optional) Emit an event
+         * 1. Decode the parameters
+         * 2. Implement your own logic
+         * 3. (Optional) Emit an event
          *
          * Example:
          *
-         * require(validatePermission(), "invalid permission");
-         *
          * ExecuteParam memory param;
          * param = abi.decode(data, (ExecuteParam));
-         *
          * IERC20(param.token).transfer(param.to, param.amount);
-         *
-         * return true;
          */
     }
 
-    function validatePermission() public view virtual override returns (bool) {
+    function validatePermission() public view override returns (bool) {
         return ISmartManager(SMART_MANAGER).isAccessible(msg.sender, TOKEN_ID);
     }
 }

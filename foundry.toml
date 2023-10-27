@@ -7,6 +7,9 @@ solc = "0.8.21"
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 
 remappings = [
-    "@smart-manager=src/smartManager/",
-    "@openzeppelin=lib/openzeppelin-contracts/contracts/"
+    "@openzeppelin=lib/openzeppelin-contracts/contracts/",
+    "@smart-manager=src/SmartManager/",
+    "@smart-nft=src/SmartNFT/",
+    "@intent-proxy=src/IntentProxy/",
+    "@test=src/Test/",
 ]

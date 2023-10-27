@@ -21,15 +21,15 @@ interface ISmartManager {
     event Audit(uint256 tokenId, address validator, bool isValid);
 
     /**
-     * @dev Developer can take initCode of an SmartNFT here to register and get a tokenId for it
+     * @dev Developer can take creationCode of an SmartNFT here to register and get a tokenId for it
      *
      * SmartManager MUST implement a `register` function
      *
-     * @param initCode  The initCode of the SmartNFT
+     * @param creationCode  The creationCode of the SmartNFT
      * @param totalSupply The total supply of the SmartNFT
      */
     function register(
-        bytes calldata initCode,
+        bytes calldata creationCode,
         uint256 totalSupply
     ) external returns (uint256 tokenId, address implAddr);
 

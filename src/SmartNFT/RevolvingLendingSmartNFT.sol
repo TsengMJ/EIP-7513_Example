@@ -69,11 +69,7 @@ contract RevolvingLendingSmartNFT is BaseSmartNFT {
         address outputAsset; // Output asset address
     }
 
-    function execute(
-        bytes memory data
-    ) external payable override returns (bool) {
-        require(validatePermission(), "invalid permission");
-
+    function _execute(bytes memory data) internal override {
         ExecuteParam memory param;
         param = abi.decode(data, (ExecuteParam));
 
@@ -142,7 +138,5 @@ contract RevolvingLendingSmartNFT is BaseSmartNFT {
                 );
             }
         }
-
-        return true;
     }
 }
