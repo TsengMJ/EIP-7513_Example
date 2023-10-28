@@ -16,7 +16,7 @@ interface IUniswapV2Router02 {
     ) external returns (uint256[] memory amounts);
 }
 
-contract SwapTokenWithUnitSwapSmartNFT is BaseSmartNFT {
+contract SwapTokenWithUniSwapSmartNFT is BaseSmartNFT {
     address public constant ROUTER02_ADDR =
         0x2f2f7197d19A13e8c72c1087dD29d555aBE76C5C;
 
@@ -37,11 +37,6 @@ contract SwapTokenWithUnitSwapSmartNFT is BaseSmartNFT {
 
         param = abi.decode(data, (ExecuteParam));
 
-        IERC20(param.path[0]).transferFrom(
-            msg.sender,
-            address(this),
-            param.amountIn
-        );
         IERC20(param.path[0]).approve(ROUTER02_ADDR, param.amountIn);
         IUniswapV2Router02(ROUTER02_ADDR).swapExactTokensForTokens(
             param.amountIn,

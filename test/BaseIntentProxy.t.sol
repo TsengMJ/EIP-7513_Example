@@ -12,7 +12,10 @@ contract BaseIntentProxyTest is Test {
     TestSmartManager public smartManager;
     TestSmartNFT public smartNFT;
 
+    address public deployer = address(0x1234);
+
     function setUp() public {
+        vm.startPrank(deployer);
         smartNFT = new TestSmartNFT();
         smartManager = new TestSmartManager();
         intentProxy = new BaseIntentProxy(address(smartManager));

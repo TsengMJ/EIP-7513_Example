@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/access/Ownable.sol";
+import "@openzeppelin/token/ERC1155/utils/ERC1155Holder.sol";
 import "./interfaces/IIntentProxy.sol";
 
 interface BaseSmartManager {
@@ -24,10 +26,10 @@ interface BaseSmartManager {
     ) external view returns (SmartNFTInfo memory);
 }
 
-contract BaseIntentProxy is IIntentProxy {
+contract BaseIntentProxy is IIntentProxy, Ownable, ERC1155Holder {
     address public immutable SMART_MANAGER;
 
-    constructor(address smartManager_) {
+    constructor(address smartManager_) Ownable(msg.sender) {
         SMART_MANAGER = smartManager_;
     }
 

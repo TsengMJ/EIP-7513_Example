@@ -13,7 +13,7 @@ contract BaseSmartNFTTest is Test {
 
     string public baseUrl = "https://baseurl.com/";
     uint256 public baseTotalSupply = 100;
-    bytes public baseSmartNFTCteationCode = type(BaseSmartNFT).creationCode;
+    bytes public cteationCode = type(BaseSmartNFT).creationCode;
     address public deployer;
     address public nonOwner = address(0x1234);
 
@@ -24,7 +24,7 @@ contract BaseSmartNFTTest is Test {
 
         vm.prank(deployer);
         (, address implAddr) = smartManager.register(
-            baseSmartNFTCteationCode,
+            cteationCode,
             baseTotalSupply
         );
         smartNFT = BaseSmartNFT(implAddr);
@@ -33,7 +33,7 @@ contract BaseSmartNFTTest is Test {
     function test_Deploy() public {
         vm.prank(deployer);
         (uint256 tokenId, address implAddr) = smartManager.register(
-            baseSmartNFTCteationCode,
+            cteationCode,
             baseTotalSupply
         );
 

@@ -76,11 +76,6 @@ contract RevolvingLendingSmartNFT is BaseSmartNFT {
         uint256 outputAssetBalanceBefore = IERC20(param.outputAsset).balanceOf(
             address(this)
         );
-        IERC20(param.inputAsset).transferFrom(
-            msg.sender,
-            address(this),
-            param.amountIn
-        );
 
         for (uint256 i = 0; i < param.count; i++) {
             if (i == 0) {
