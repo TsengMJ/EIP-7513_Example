@@ -34,27 +34,28 @@ contract BaseIntentProxy is IIntentProxy, Ownable, ERC1155Holder {
     }
 
     function executeIntent(
-        uint256[] memory tokenIds,
-        bytes[] memory actions
+        Action[] calldata actions
     ) external payable override returns (bool) {
-        uint256 length = tokenIds.length;
-        if (length != actions.length) {
-            revert InvalidIntentInputLength();
-        }
+        uint256 length = actions.length;
         if (length == 0) {
             revert EmptyActions();
         }
 
         BaseSmartManager.SmartNFTInfo memory info;
         for (uint256 i = 0; i < length; i++) {
-            info = BaseSmartManager(SMART_MANAGER).smartNFTInfoOf(tokenIds[i]);
+            info = BaseSmartManager(SMART_MANAGER).smartNFTInfoOf(
+                actions[i].tokenId
+            );
 
             (bool success, ) = info.implAddr.delegatecall(
-                abi.encodeWithSignature("execute(bytes)", actions[i])
+                abi.encodeWithSignature(
+                    "execute(bytes)",
+                    actions[i].executeParam
+                )
             );
 
             if (!success) {
-                revert DelegateCallFailed(tokenIds[i]);
+                revert DelegateCallFailed(actions[i].tokenId);
             }
         }
 

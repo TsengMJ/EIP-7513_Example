@@ -6,6 +6,7 @@ import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
 import {Test, console2} from "forge-std/Test.sol";
 import {BaseSmartManager} from "../src/SmartManager/BaseSmartManager.sol";
 import {ISmartManager} from "../src/SmartManager/interfaces/ISmartManager.sol";
+import {IIntentProxy} from "../src/IntentProxy/interfaces/IIntentProxy.sol";
 import {SwapTokenWithUniSwapSmartNFT} from "../src/SmartNFT/SwapTokenWithUniSwapSmartNFT.sol";
 import {BaseIntentProxy} from "../src/IntentProxy/BaseIntentProxy.sol";
 import {TestERC20} from "@test/TestERC20.sol";
@@ -97,13 +98,10 @@ contract SwapTokenWithUniswapSmartNFTTest is Test {
             })
         );
 
-        uint256[] memory tokenIds = new uint256[](1);
-        tokenIds[0] = tokenId;
+        IIntentProxy.Action[] memory actions = new IIntentProxy.Action[](1);
+        actions[0] = IIntentProxy.Action(tokenId, executeParam);
 
-        bytes[] memory actions = new bytes[](1);
-        actions[0] = executeParam;
-
-        assertEq(intentProxy.executeIntent(tokenIds, actions), true);
+        assertEq(intentProxy.executeIntent(actions), true);
         assertEq(IERC20(wbtc).balanceOf(address(intentProxy)), 99 ether);
 
         vm.stopPrank();

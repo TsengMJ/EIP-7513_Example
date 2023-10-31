@@ -5,6 +5,7 @@ import {Ownable} from "@openzeppelin/access/Ownable.sol";
 import {Test, console2} from "forge-std/Test.sol";
 import {TestSmartNFT} from "@test/TestSmartNFT.sol";
 import {TestSmartManager} from "@test/TestSmartManager.sol";
+import {IIntentProxy} from "@intent-proxy/interfaces/IIntentProxy.sol";
 import {BaseIntentProxy} from "@intent-proxy/BaseIntentProxy.sol";
 
 contract BaseIntentProxyTest is Test {
@@ -28,14 +29,10 @@ contract BaseIntentProxyTest is Test {
     }
 
     function test_ExecuteIntent() public {
-        uint256[] memory tokenIds = new uint256[](2);
-        tokenIds[0] = 1;
-        tokenIds[1] = 1;
+        IIntentProxy.Action[] memory actions = new IIntentProxy.Action[](2);
+        actions[0] = IIntentProxy.Action(1, abi.encode(0x01));
+        actions[1] = IIntentProxy.Action(1, abi.encode(0x02));
 
-        bytes[] memory actions = new bytes[](2);
-        actions[0] = abi.encode(0x01);
-        actions[1] = abi.encode(0x02);
-
-        assertEq(intentProxy.executeIntent(tokenIds, actions), true);
+        assertEq(intentProxy.executeIntent(actions), true);
     }
 }

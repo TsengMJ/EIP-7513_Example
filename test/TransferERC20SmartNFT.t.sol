@@ -6,6 +6,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {BaseSmartManager} from "../src/SmartManager/BaseSmartManager.sol";
 import {ISmartManager} from "../src/SmartManager/interfaces/ISmartManager.sol";
 import {TransferERC20SmartNFT} from "../src/SmartNFT/TransferERC20SmartNFT.sol";
+import {IIntentProxy} from "../src/IntentProxy/interfaces/IIntentProxy.sol";
 import {BaseIntentProxy} from "../src/IntentProxy/BaseIntentProxy.sol";
 import {TestERC20} from "@test/TestERC20.sol";
 
@@ -80,16 +81,11 @@ contract TransferERC20SmartNFTTest is Test {
             })
         );
 
-        uint256[] memory tokenIds = new uint256[](2);
-        tokenIds[0] = tokenId;
-        tokenIds[1] = tokenId;
+        IIntentProxy.Action[] memory actions = new IIntentProxy.Action[](1);
+        actions[0] = IIntentProxy.Action(tokenId, executeParam);
 
-        bytes[] memory actions = new bytes[](2);
-        actions[0] = executeParam;
-        actions[1] = executeParam;
-
-        assertEq(intentProxy.executeIntent(tokenIds, actions), true);
-        assertEq(token.balanceOf(address(nonOwner)), 2);
+        assertEq(intentProxy.executeIntent(actions), true);
+        assertEq(token.balanceOf(address(nonOwner)), 1);
 
         vm.stopPrank();
     }
