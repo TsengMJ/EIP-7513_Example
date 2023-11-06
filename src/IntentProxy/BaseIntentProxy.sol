@@ -35,7 +35,7 @@ contract BaseIntentProxy is IIntentProxy, Ownable, ERC1155Holder {
 
     function executeIntent(
         Action[] calldata actions
-    ) external payable override returns (bool) {
+    ) external payable override onlyOwner returns (bool) {
         uint256 length = actions.length;
         if (length == 0) {
             revert EmptyActions();
